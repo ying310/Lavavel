@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layout.master')
 @section('title', $title)
 @section('content')
 <h1>恭喜 {{$nickname}} Shop Laravel 註冊成功</h1>

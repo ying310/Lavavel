@@ -5,7 +5,10 @@ use App\Http\Controllers\Controller;
 
 class HomeController extends Controller{
   public function indexPage(){
-    return "hello";
+    $binding = [
+      'title' => '首頁'
+    ];
+    return view('home', $binding);
   }
 }
  ?>

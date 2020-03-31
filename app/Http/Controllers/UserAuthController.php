@@ -12,7 +12,25 @@ class UserAuthController extends Controller{
     return view('auth.signIn', $binding);
   }
   public function signInProcess(){
-
+    $input = request()->all();
+    $rules = [
+      'email' => ['required', 'max:150', 'email'],
+      'password' => ['required', 'min:6']
+    ];
+    $validator = Validator::make($input, $rules);
+    if($validator->fails()){
+      return redirect('/user/auth/sign-in')->withErrors($validator)->withInput();
+    }
+    $User = User::where('email', $input['email'])->firstOrFail();
+    $is_password_correct = Hash::check($input['password'], $User->password);
+    if(!$is_password_correct){
+      $error_message = [
+        'msg' => ['密碼錯誤']
+      ];
+      return redirect('/user/auth/sign-in')->withErrors($error_message)->withInput();
+    }
+    session()->put('user_id', $User->id);
+    return redirect()->intended('/');
   }
   public function signUpPage(){
     $binding = ['title' => '註冊'];
@@ -45,6 +63,10 @@ class UserAuthController extends Controller{
         $mail->subject('恭喜註冊Laravel Shop成功');
     });
     return redirect('/user/auth/sign-in');
+  }
+  public function signOut(){
+    session()->forget('user_id');
+    return redirect('/');
   }
 }
  ?>
