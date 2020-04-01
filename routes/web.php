@@ -27,15 +27,15 @@ Route::group(['prefix' => 'user'], function(){
 
 Route::group(['prefix' => 'merchandise'], function(){
   Route::get('/', 'MerchandiseController@merchandiseListPage');
-  Route::get('/create', 'MerchandiseController@merchandiseCreateProcess');
-  Route::get('/manage', 'MerchandiseController@merchandiseManageListPage');
+  Route::get('/create', 'MerchandiseController@merchandiseCreateProcess')->middleware(['user.auth.admin']);
+  Route::get('/manage', 'MerchandiseController@merchandiseManageListPage')->middleware(['user.auth.admin']);
   Route::group(['prefix' => '{merchandise_id}'], function(){
     Route::get('/', 'MerchandiseController@merchandiseItemPage');
-    Route::get('/edit', 'MerchandiseController@merchandiseEditPage');
-    Route::put('/', 'MerchandiseController@merchandiseUpdateProcess');
-    Route::post('/buy', 'MerchandiseController@merchandiseItemBuyProcess');
+    Route::get('/edit', 'MerchandiseController@merchandiseEditPage')->middleware(['user.auth.admin']);
+    Route::put('/', 'MerchandiseController@merchandiseUpdateProcess')->middleware(['user.auth.admin']);
+    Route::post('/buy', 'MerchandiseController@merchandiseItemBuyProcess')->middleware(['user.auth']);
   });
 });
 //交易
-Route::get('/transaction', 'TransactionController@transactionListPage');
+Route::get('/transaction', 'TransactionController@transactionListPage')->middleware(['user.auth']);
 ?>

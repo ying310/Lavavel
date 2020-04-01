@@ -1,4 +1,5 @@
 @extends('layout.master')
+
 @section('title', $title)
 @section('content')
 <div class="container">

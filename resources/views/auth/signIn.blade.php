@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
 <h1>{{$title}}</h1>
-@include('components.socialBotton')
+@include('components.ValidationErrorMessage')
 <form action='/user/auth/sign-in' method="post">
   <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
   <label>
