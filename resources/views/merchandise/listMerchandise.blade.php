@@ -8,7 +8,7 @@
 <tr>
 	<th>名稱</th>
 	<th>照片</th>
-	<th style="width:100px">價格</th>
+	<th style="width:10	0px">價格</th>
 	<th>剩餘數量</th>
 </tr>
 @foreach($MerchandisePaginate as $Merchandise)
