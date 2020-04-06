@@ -4,6 +4,9 @@ use App\Http\Controllers\Controller;
 use Validator;
 use Image;
 use App\Shop\Entity\Merchandise;
+use App\Shop\Entity\User;
+use App\Shop\Entity\Transaction;
+use DB;
 
 class MerchandiseController extends Controller {
     public function merchandiseCreateProcess(){
@@ -88,5 +91,60 @@ class MerchandiseController extends Controller {
 	return view('merchandise.listMerchandise', $binding);
 }
 }
+  public function merchandiseItemPage($merchandise_id){
+    $Merchandise = Merchandise::findOrFail($merchandise_id);
+    if(!is_null($Merchandise->photo)){
+      $Merchandise->photo = url($Merchandise->photo);
+    }
+    $binding = [
+      'title' => '商品頁',
+      'Merchandise' => $Merchandise
+    ];
+    return view('merchandise.showMerchandise', $binding);
+  }
+  public function merchandiseItemBuyProcess($merchandise_id){
+    $input = request()->all();
+    $rules = [
+      'buy_count' => ['required', 'integer', 'min:1']
+    ];
+    $validator = Validator::make($input, $rules);
+    if($validator->fails()){
+      return redirect('/merchandise/'.$merchandise_id)->withErrors($validator)->withInput();
+    }
+    try{
+      $user_id = session()->get('user_id');
+      $User = User::findOrFail($user_id);
+      DB::beginTransaction();
+      $Merchandise = Merchandise::findOrFail($merchandise_id);
+      $buy_count = $input['buy_count'];
+      $remain_count_after_buy = $Merchandise->remain_count - $buy_count;
+      if($remain_count_after_buy < 0){
+        throw new Exception('商品數量不足，無法購買');
+      }
+      $Merchandise->remain_count = $remain_count_after_buy;
+      $Merchandise->save();
+      $total_price = $Merchandise->price * $buy_count;
+      $transaction_data = [
+        'user_id' => $User->id,
+        'merchandise_id' => $Merchandise->id,
+        'price' => $Merchandise->price,
+        'buy_count' => $buy_count,
+        'total_price' => $total_price
+      ];
+      Transaction::create($transaction_data);
+      DB::commit();
+      $message = [
+        'msg' => ['購買成功','恭喜你']
+      ];
+      return redirect()->to('/merchandise/'.$Merchandise->id)->withErrors($message);
+    }
+    catch(Exception $exception){
+      DB::rollBack();
+      $error_message = [
+        'msg' => [$exception->getMessage()]
+      ];
+      return redirect()->back()->withErrors($error_message)->withInput();
+    }
+  }
 }
 ?>

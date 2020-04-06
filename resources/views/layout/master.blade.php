@@ -12,6 +12,7 @@
         <li><a href="/merchandise/create">建立</a></li>
         <li><a href="/merchandise/manage">編輯所有</a></li>
         <li><a href="/merchandise">查看</a></li>
+        <li><a href="/transaction">交易紀錄</a></li>
       @else
         <li><a href="/user/auth/sign-in">登入</a></li>
         <li><a href="/user/auth/sign-up">註冊</a></li>
